@@ -8,10 +8,12 @@
 - [x] Count total inscriptions
 
 ## Dataset Exploration
+- [x] Count total inscriptions
+- [x] Determine the dataset date range
+- [ ] Analyze inscription activity over time
 - [ ] Count unique inscription contents
 - [ ] Identify duplicate/repeated content
 - [ ] Find the most frequently repeated content
-- [ ] Analyze inscription activity over time
 - [ ] Identify periods with unusually high activity
 - [ ] Analyze content length distribution
 - [ ] Investigate the meaning and distribution of the `value` field
