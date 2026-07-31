@@ -7,20 +7,19 @@ public class InscriptionReader {
     public void readFile() {
         try (BufferedReader br = new BufferedReader(new FileReader("data/text_inscriptions.txt"))) {
 
+            ObjectMapper mapper = new ObjectMapper(); //reuse it for every inscriptions
             String line = br.readLine();
 
-            if (line != null) {
-                ObjectMapper mapper = new ObjectMapper();
-                Inscription inscription = mapper.readValue(line, Inscription.class);
+            int counter =0; //count inscriptions
 
-                System.out.println("id: " + inscription.getId());
-                System.out.println("content: " + inscription.getContent());
-                System.out.println("block number: " + inscription.getBlockNo());
-                System.out.println("number: " + inscription.getNumber());
-                System.out.println("timestamp: " + inscription.getTimestamp());
-                System.out.println("content length: " + inscription.getContentLength());
-                System.out.println("value: " + inscription.getValue());
-            }
+           while (line != null) {
+
+                Inscription inscription = mapper.readValue(line, Inscription.class);
+                counter++;
+               line = br.readLine(); //read the next line
+
+           }
+            System.out.println("Total inscriptions: " +counter);
         } catch (IOException e) {
             System.out.println("Error reading file.");
         }
