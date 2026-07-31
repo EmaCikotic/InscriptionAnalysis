@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper; //https://www.baeldung.com/j
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+
 public class InscriptionReader {
     public void readFile() {
         try (BufferedReader br = new BufferedReader(new FileReader("data/text_inscriptions.txt"))) {
@@ -38,6 +39,7 @@ public class InscriptionReader {
             System.out.println("From: " + earliestDate);
             System.out.println("To: " + latestDate);
             System.out.println("Total inscriptions: " + String.format("%,d", counter));
+
         } catch (IOException e) {
             System.out.println("Error reading file.");
         }

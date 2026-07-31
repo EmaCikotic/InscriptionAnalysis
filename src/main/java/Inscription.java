@@ -26,7 +26,6 @@ public class Inscription {
         this.value=value;
     }
 
-
     public String getId() {
         return id;
     }
