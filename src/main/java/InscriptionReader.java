@@ -9,6 +9,8 @@ import java.time.YearMonth;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.Set;
+import java.util.HashSet;
 
 public class InscriptionReader {
     public void readFile() {
@@ -23,6 +25,7 @@ public class InscriptionReader {
             long latestTimestamp = Long.MIN_VALUE;
 
             Map<YearMonth, Integer> monthlyActivity = new TreeMap<>();
+            Map<YearMonth, Set<String>> uniqueActivity = new HashMap<>();
 
            while (line != null) {
 
@@ -33,6 +36,10 @@ public class InscriptionReader {
                LocalDate date = Instant.ofEpochSecond(timestamp).atZone(ZoneOffset.UTC).toLocalDate();
 
                YearMonth month = YearMonth.from(date);
+
+               //for unique entries
+               Set<String> contents = uniqueActivity.computeIfAbsent(month, k -> new HashSet<>());
+               contents.add(inscription.getContent());
 
                monthlyActivity.put(month, monthlyActivity.getOrDefault(month, 0) + 1);
 
@@ -58,6 +65,13 @@ public class InscriptionReader {
 
             for (Map.Entry<YearMonth, Integer> entry : monthlyActivity.entrySet()) {
                 System.out.println(entry.getKey() + " -> " + String.format("%,d", entry.getValue()));
+            }
+
+            System.out.println("                ");
+            System.out.println("Unique entries: ");
+
+            for (Map.Entry<YearMonth, Set<String>> entry : uniqueActivity.entrySet()) {
+                System.out.println(entry.getKey() + " -> " + String.format("%,d",entry.getValue().size()));
             }
 
         } catch (IOException e) {
