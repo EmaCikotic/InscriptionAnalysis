@@ -8,6 +8,7 @@ import java.time.ZoneOffset;
 import java.time.YearMonth;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class InscriptionReader {
     public void readFile() {
@@ -21,7 +22,7 @@ public class InscriptionReader {
             long earliestTimestamp = Long.MAX_VALUE;
             long latestTimestamp = Long.MIN_VALUE;
 
-            Map<YearMonth, Integer> monthlyActivity = new HashMap<>();
+            Map<YearMonth, Integer> monthlyActivity = new TreeMap<>();
 
            while (line != null) {
 
