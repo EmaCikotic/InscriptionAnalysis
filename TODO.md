@@ -11,7 +11,8 @@
 - [x] Count total inscriptions
 - [x] Determine the dataset date range
 - [x] Analyze monthly inscription activity
-- [ ] Count unique inscription contents
+- [x] Count unique inscription contents
+- [x] Calculate duplicate inscription counts per month
 - [ ] Identify duplicate/repeated content
 - [ ] Find the most frequently repeated content
 - [ ] Identify periods with unusually high activity

@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.YearMonth;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Set;
 import java.util.HashSet;
@@ -25,7 +24,7 @@ public class InscriptionReader {
             long latestTimestamp = Long.MIN_VALUE;
 
             Map<YearMonth, Integer> monthlyActivity = new TreeMap<>();
-            Map<YearMonth, Set<String>> uniqueActivity = new HashMap<>();
+            Map<YearMonth, Set<String>> uniqueActivity = new TreeMap<>();
 
            while (line != null) {
 
@@ -43,11 +42,12 @@ public class InscriptionReader {
 
                monthlyActivity.put(month, monthlyActivity.getOrDefault(month, 0) + 1);
 
-
                if (timestamp < earliestTimestamp)  earliestTimestamp = timestamp;
 
                if (timestamp > latestTimestamp)  latestTimestamp = timestamp;
+
                counter++;
+
                line = br.readLine(); //read the next line
 
            }
@@ -61,17 +61,21 @@ public class InscriptionReader {
             System.out.println("To: " + latestDate);
             System.out.println("Total inscriptions: " + String.format("%,d", counter));
 
-            System.out.println("\nMonthly activity:");
+            System.out.println("\nMonthly Statistics:");
+            System.out.printf("%-10s %-12s %-12s %-12s%n", "Month", "Total", "Unique", "Duplicates");
+            System.out.println("------------------------------------------------------------");
 
-            for (Map.Entry<YearMonth, Integer> entry : monthlyActivity.entrySet()) {
-                System.out.println(entry.getKey() + " -> " + String.format("%,d", entry.getValue()));
-            }
+            for (YearMonth month : monthlyActivity.keySet()) {
 
-            System.out.println("                ");
-            System.out.println("Unique entries: ");
+                int total = monthlyActivity.get(month);
+                int unique = uniqueActivity.get(month).size();
+                int duplicates = total - unique;
 
-            for (Map.Entry<YearMonth, Set<String>> entry : uniqueActivity.entrySet()) {
-                System.out.println(entry.getKey() + " -> " + String.format("%,d",entry.getValue().size()));
+                System.out.printf("%-10s %-12s %-12s %-12s%n",
+                        month,
+                        String.format("%,d", total),
+                        String.format("%,d", unique),
+                        String.format("%,d", duplicates));
             }
 
         } catch (IOException e) {
