@@ -17,7 +17,7 @@
 - [x] Count global content frequencies
 - [x] Find the most frequently repeated content
 - [x] Export content-frequency results to CSV
-- [ ] Add duplicate percentages to monthly statistics
+- [x] Add duplicate percentages to monthly statistics
 - [ ] Analyze content length distribution
 - [ ] Investigate the meaning and distribution of the `value` field
 
