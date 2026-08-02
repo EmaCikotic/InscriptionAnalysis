@@ -25,6 +25,8 @@ public class InscriptionReader {
             Map<YearMonth, Integer> monthlyActivity = new TreeMap<>();
             Map<YearMonth, Set<String>> uniqueActivity = new TreeMap<>();
             Map<String, Integer> contentFrequency = new HashMap<>(); //no need to be sorted
+            Map<String, Integer> contentTypes = new TreeMap<>();
+            Set<String> otherContents = new HashSet<>(); //export "other" type to csv
 
            while (line != null) {
 
@@ -42,6 +44,40 @@ public class InscriptionReader {
                Set<String> contents = uniqueActivity.computeIfAbsent(month, k -> new HashSet<>());
                contents.add(content);
 
+               String type; //JSON, HTML, Reference, Plain text
+
+               //classfying into content type
+               if (content == null || content.isBlank()) {
+                   type = "Empty";
+               }
+               else if (content.startsWith("/content/")) {
+                   type = "Reference";
+               }
+               else if (content.stripLeading().startsWith("<")) {
+                   type = "HTML";
+               }
+               else if (content.stripLeading().startsWith("{")) {
+                   type = "JSON";
+               }
+               else if (content.stripLeading().startsWith("http://")
+                       || content.stripLeading().startsWith("https://")) {
+                   type = "URL";
+               }
+               else if (content.toLowerCase().endsWith(".bitmap")) {
+                   type = "Bitmap";
+               }
+               else if (content.matches(".*\\.[A-Za-z0-9]+$")) { // .bitnats, .btc, .block, .uniworlds, .ordimap, .sats, .x, .ai, etc.
+                   type = "Namespace";
+               }
+               else if (content.codePointCount(0, content.length()) == 1) {
+                   type = "Single Character";
+               }
+               else {
+                   type = "Other";
+                   otherContents.add(content);
+               }
+               contentTypes.put(type, contentTypes.getOrDefault(type, 0) + 1);
+
                monthlyActivity.put(month, monthlyActivity.getOrDefault(month, 0) + 1);
                if (content != null && !content.isBlank()) {
                    contentFrequency.put(content, contentFrequency.getOrDefault(content, 0) + 1);
@@ -56,6 +92,22 @@ public class InscriptionReader {
                line = br.readLine(); //read the next line
 
            }
+
+            try (PrintWriter writer =
+                         new PrintWriter(new FileWriter("output/other_contents.csv"))) {
+
+                writer.println("Content");
+
+                for (String content : otherContents) {
+
+                    content = content
+                            .replace("\"", "\"\"")
+                            .replace("\n", "\\n")
+                            .replace("\r", "\\r");
+
+                    writer.println("\"" + content + "\"");
+                }
+            }
 
            //getting the actual date not seconds
             LocalDate earliestDate = Instant.ofEpochSecond(earliestTimestamp).atZone(ZoneOffset.UTC).toLocalDate();
@@ -89,8 +141,6 @@ public class InscriptionReader {
             sortedContents.sort((a, b) -> b.getValue().compareTo(a.getValue()));
 
             //writing to a file
-           // System.out.println("\nTop 20 Most Repeated Contents:");
-
             try (PrintWriter writer = new PrintWriter(new FileWriter("output/content_frequency.csv"))) {
 
                 writer.println("Occurrences,Content");
@@ -106,6 +156,14 @@ public class InscriptionReader {
                 }
             }
             System.out.println("writing to CSV done");
+
+            System.out.println("\nContent Types:  ");
+
+            for (Map.Entry<String, Integer> entry : contentTypes.entrySet()) {
+                System.out.printf("%-15s %s%n",
+                        entry.getKey(),
+                        String.format("%,d", entry.getValue()));
+            }
 
          } catch (IOException e) {
         System.out.println("Error reading file: " + e.getMessage());
