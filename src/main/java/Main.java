@@ -34,11 +34,12 @@ public class Main {
     private static void printMonthlyStatistics(InscriptionStatistics statistics) {
         System.out.println("\nMonthly Statistics:");
         System.out.printf(
-                "%-10s %-12s %-12s %-12s%n",
+                "%-10s %-12s %-12s %-12s %-12s%n",
                 "Month",
                 "Total",
                 "Unique",
-                "Duplicates"
+                "Duplicates",
+                "Duplicate %"
         );
 
         System.out.println(
@@ -52,13 +53,15 @@ public class Main {
             int total = monthlyActivity.get(month);
             int unique = uniqueActivity.get(month).size();
             int duplicates = total - unique;
+            double duplicatePercentage = (duplicates * 100.0) / total;
 
             System.out.printf(
-                    "%-10s %-12s %-12s %-12s%n",
+                    "%-10s %-12s %-12s %-12s %10.2f%%%n",
                     month,
                     String.format("%,d", total),
                     String.format("%,d", unique),
-                    String.format("%,d", duplicates)
+                    String.format("%,d", duplicates),
+                    duplicatePercentage
             );
         }
     }
