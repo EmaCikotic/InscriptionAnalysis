@@ -6,10 +6,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.YearMonth;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
+import java.io.PrintWriter;
+import java.io.FileWriter;
 
 public class InscriptionReader {
     public void readFile() {
@@ -25,11 +24,14 @@ public class InscriptionReader {
 
             Map<YearMonth, Integer> monthlyActivity = new TreeMap<>();
             Map<YearMonth, Set<String>> uniqueActivity = new TreeMap<>();
+            Map<String, Integer> contentFrequency = new HashMap<>(); //no need to be sorted
 
            while (line != null) {
 
                 Inscription inscription = mapper.readValue(line, Inscription.class);
+
                 long timestamp=inscription.getTimestamp();
+                String content = inscription.getContent();
 
                // Convert timestamp -> LocalDate -> YearMonth
                LocalDate date = Instant.ofEpochSecond(timestamp).atZone(ZoneOffset.UTC).toLocalDate();
@@ -38,9 +40,12 @@ public class InscriptionReader {
 
                //for unique entries
                Set<String> contents = uniqueActivity.computeIfAbsent(month, k -> new HashSet<>());
-               contents.add(inscription.getContent());
+               contents.add(content);
 
                monthlyActivity.put(month, monthlyActivity.getOrDefault(month, 0) + 1);
+               if (content != null && !content.isBlank()) {
+                   contentFrequency.put(content, contentFrequency.getOrDefault(content, 0) + 1);
+               }
 
                if (timestamp < earliestTimestamp)  earliestTimestamp = timestamp;
 
@@ -78,8 +83,32 @@ public class InscriptionReader {
                         String.format("%,d", duplicates));
             }
 
-        } catch (IOException e) {
-            System.out.println("Error reading file.");
-        }
+            //the most repeated content
+            List<Map.Entry<String, Integer>> sortedContents = new ArrayList<>(contentFrequency.entrySet());
+
+            sortedContents.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+
+            //writing to a file
+           // System.out.println("\nTop 20 Most Repeated Contents:");
+
+            try (PrintWriter writer = new PrintWriter(new FileWriter("output/content_frequency.csv"))) {
+
+                writer.println("Occurrences,Content");
+
+                for (Map.Entry<String, Integer> entry : sortedContents) {
+
+                    String content = entry.getKey()
+                            .replace("\"", "\"\"")
+                            .replace("\n", "\\n")
+                            .replace("\r", "\\r");
+
+                    writer.println(entry.getValue() + ",\"" + content + "\"");
+                }
+            }
+            System.out.println("writing to CSV done");
+
+         } catch (IOException e) {
+        System.out.println("Error reading file: " + e.getMessage());
+    }
     }
 }

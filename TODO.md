@@ -15,7 +15,7 @@
 - [x] Calculate duplicate inscription counts per month
 - [ ] Identify duplicate/repeated content
 - [ ] Find the most frequently repeated content
-- [ ] Identify periods with unusually high activity
+- [x] Identify periods with unusually high activity
 - [ ] Analyze content length distribution
 - [ ] Investigate the meaning and distribution of the `value` field
 
