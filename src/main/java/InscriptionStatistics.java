@@ -14,6 +14,10 @@ public class InscriptionStatistics {
     private long earliestTimestamp = Long.MAX_VALUE;
     private long latestTimestamp = Long.MIN_VALUE;
 
+    private long minimumContentLength = Long.MAX_VALUE;
+    private long maximumContentLength = Long.MIN_VALUE;
+    private long totalContentLength = 0;
+
     private final Map<YearMonth, Integer> monthlyActivity = new TreeMap<>();
     private final Map<YearMonth, Set<String>> uniqueActivity = new TreeMap<>();
     private final Map<String, Integer> contentFrequency = new HashMap<>();
@@ -24,10 +28,25 @@ public class InscriptionStatistics {
 
         long timestamp = inscription.getTimestamp();
         String content = inscription.getContent();
+        long contentLength = inscription.getContentLength();
 
         LocalDate date = Instant.ofEpochSecond(timestamp).atZone(ZoneOffset.UTC).toLocalDate();
 
         YearMonth month = YearMonth.from(date);
+
+        // Find minimum content length
+        if (contentLength < minimumContentLength) {
+            minimumContentLength = contentLength;
+        }
+
+// Find maximum content length
+        if (contentLength > maximumContentLength) {
+            maximumContentLength = contentLength;
+        }
+
+// Add to total length
+        totalContentLength = totalContentLength + contentLength;
+
 
         // inscriptions per month
         if (monthlyActivity.containsKey(month)) {
@@ -78,6 +97,9 @@ public class InscriptionStatistics {
             latestTimestamp = timestamp;
         }
 
+
+
+
         totalCount++;
     }
 
@@ -111,5 +133,22 @@ public class InscriptionStatistics {
 
     public Set<String> getOtherContents() {
         return otherContents;
+    }
+
+    public long getMinimumContentLength() {
+        return minimumContentLength;
+    }
+
+    public long getMaximumContentLength() {
+        return maximumContentLength;
+    }
+
+    public double getAverageContentLength() {
+
+        if (totalCount == 0) {
+            return 0;
+        }
+
+        return (double) totalContentLength / totalCount;
     }
 }

@@ -13,6 +13,7 @@ public class Main {
         printSummary(statistics);
         printMonthlyStatistics(statistics);
         printContentTypes(statistics);
+        printContentLengthStatistics(statistics);
 
         CsvExporter exporter = new CsvExporter();
         exporter.exportOtherContents(statistics.getOtherContents(), "output/other_contents.csv");
@@ -78,5 +79,14 @@ public class Main {
 
             System.out.printf("%-18s %s%n", type, String.format("%,d", count));
         }
+    }
+
+    private static void printContentLengthStatistics(InscriptionStatistics statistics) {
+
+        System.out.println("\nContent Length Statistics:");
+
+        System.out.println("Minimum length: " + statistics.getMinimumContentLength()+ " bytes");
+        System.out.println("Maximum length: " + statistics.getMaximumContentLength()+ " bytes");
+        System.out.printf("Average length: %.2f bytes%n", statistics.getAverageContentLength());
     }
 }
