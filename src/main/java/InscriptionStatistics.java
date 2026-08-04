@@ -23,6 +23,7 @@ public class InscriptionStatistics {
     private final Map<String, Integer> contentFrequency = new HashMap<>();
     private final Map<String, Integer> contentTypes = new TreeMap<>();
     private final Set<String> otherContents = new HashSet<>();
+    private final Map<String, Integer> contentLengthDistribution = new TreeMap<>();
 
     public void process(Inscription inscription, String type) {
 
@@ -46,6 +47,30 @@ public class InscriptionStatistics {
 
 // Add to total length
         totalContentLength = totalContentLength + contentLength;
+
+        String lengthRange;
+
+        if (contentLength == 0) {
+            lengthRange = "0 bytes";
+        }
+        else if (contentLength <= 10) {
+            lengthRange = "1-10 bytes";
+        }
+        else if (contentLength <= 50) {
+            lengthRange = "11-50 bytes";
+        }
+        else if (contentLength <= 100) {
+            lengthRange = "51-100 bytes";
+        }
+        else if (contentLength <= 500) {
+            lengthRange = "101-500 bytes";
+        }
+        else if (contentLength <= 1000) {
+            lengthRange = "501-1000 bytes";
+        }
+        else {
+            lengthRange = "Over 1000 bytes";
+        }
 
 
         // inscriptions per month
@@ -80,6 +105,13 @@ public class InscriptionStatistics {
             contentTypes.put(type, currentTypeCount + 1);
         } else {
             contentTypes.put(type, 1);
+        }
+
+        if (contentLengthDistribution.containsKey(lengthRange)) {
+            int currentCount = contentLengthDistribution.get(lengthRange);
+            contentLengthDistribution.put(lengthRange, currentCount + 1);
+        } else {
+            contentLengthDistribution.put(lengthRange, 1);
         }
 
 
@@ -150,5 +182,9 @@ public class InscriptionStatistics {
         }
 
         return (double) totalContentLength / totalCount;
+    }
+
+    public Map<String, Integer> getContentLengthDistribution() {
+        return contentLengthDistribution;
     }
 }

@@ -14,6 +14,7 @@ public class Main {
         printMonthlyStatistics(statistics);
         printContentTypes(statistics);
         printContentLengthStatistics(statistics);
+        printContentLengthDistribution(statistics);
 
         CsvExporter exporter = new CsvExporter();
         exporter.exportOtherContents(statistics.getOtherContents(), "output/other_contents.csv");
@@ -88,5 +89,29 @@ public class Main {
         System.out.println("Minimum length: " + statistics.getMinimumContentLength()+ " bytes");
         System.out.println("Maximum length: " + statistics.getMaximumContentLength()+ " bytes");
         System.out.printf("Average length: %.2f bytes%n", statistics.getAverageContentLength());
+    }
+
+    private static void printContentLengthDistribution(InscriptionStatistics statistics) {
+
+        System.out.println("\nContent Length Distribution:");
+
+        Map<String, Integer> distribution = statistics.getContentLengthDistribution();
+
+        String[] ranges = {
+                "0 bytes",
+                "1-10 bytes",
+                "11-50 bytes",
+                "51-100 bytes",
+                "101-500 bytes",
+                "501-1000 bytes",
+                "Over 1000 bytes"
+        };
+
+        for (String range : ranges) {
+            int count = distribution.get(range);
+
+            System.out.printf("%-20s %s%n", range, String.format("%,d", count)
+            );
+        }
     }
 }
