@@ -18,7 +18,7 @@
 - [x] Find the most frequently repeated content
 - [x] Export content-frequency results to CSV
 - [x] Add duplicate percentages to monthly statistics
-- [ ] Analyze content length distribution
+- [x] Analyze content length distribution
 - [ ] Investigate the meaning and distribution of the `value` field
 
 ## Content Analysis
