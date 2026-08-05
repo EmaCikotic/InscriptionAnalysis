@@ -18,6 +18,12 @@ public class InscriptionStatistics {
     private long maximumContentLength = Long.MIN_VALUE;
     private long totalContentLength = 0;
 
+    private long minimumValue= Long.MAX_VALUE;
+    private long maximumValue = Long.MIN_VALUE;
+    private long totalValue = 0;
+
+
+
     private final Map<YearMonth, Integer> monthlyActivity = new TreeMap<>();
     private final Map<YearMonth, Set<String>> uniqueActivity = new TreeMap<>();
     private final Map<String, Integer> contentFrequency = new HashMap<>();
@@ -30,23 +36,34 @@ public class InscriptionStatistics {
         long timestamp = inscription.getTimestamp();
         String content = inscription.getContent();
         long contentLength = inscription.getContentLength();
+        long value = inscription.getValue();
 
         LocalDate date = Instant.ofEpochSecond(timestamp).atZone(ZoneOffset.UTC).toLocalDate();
 
         YearMonth month = YearMonth.from(date);
 
-        // Find minimum content length
+        // Value statistics
+        if (value < minimumValue) {
+            minimumValue = value;
+        }
+
+        if (value > maximumValue) {
+            maximumValue = value;
+        }
+
+        totalValue = totalValue + value;
+
+        // Content length statistics
         if (contentLength < minimumContentLength) {
             minimumContentLength = contentLength;
         }
 
-// Find maximum content length
         if (contentLength > maximumContentLength) {
             maximumContentLength = contentLength;
         }
 
-// Add to total length
         totalContentLength = totalContentLength + contentLength;
+
 
         String lengthRange;
 
@@ -187,4 +204,20 @@ public class InscriptionStatistics {
     public Map<String, Integer> getContentLengthDistribution() {
         return contentLengthDistribution;
     }
+
+    public long getMaximumValue() {
+        return maximumValue;
+    }
+    public long getMinimumValue() {
+        return minimumValue;
+    }
+
+    public double getAverageValue() {
+        if (totalCount == 0) {
+            return 0;
+        }
+
+        return (double) totalValue / totalCount;
+    }
+
 }

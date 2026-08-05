@@ -15,6 +15,7 @@ public class Main {
         printContentTypes(statistics);
         printContentLengthStatistics(statistics);
         printContentLengthDistribution(statistics);
+        printValueStatistics(statistics);
 
         CsvExporter exporter = new CsvExporter();
         exporter.exportOtherContents(statistics.getOtherContents(), "output/other_contents.csv");
@@ -113,5 +114,13 @@ public class Main {
             System.out.printf("%-20s %s%n", range, String.format("%,d", count)
             );
         }
+    }
+    private static void printValueStatistics(InscriptionStatistics statistics) {
+
+        System.out.println("\nValue Statistics:");
+
+        System.out.println("Minimum value: " + statistics.getMinimumValue() + " sats");
+        System.out.println("Maximum value: " + statistics.getMaximumValue() + " sats");
+        System.out.printf("Average value: %.2f sats%n", statistics.getAverageValue());
     }
 }
