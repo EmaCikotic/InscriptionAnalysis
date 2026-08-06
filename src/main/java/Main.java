@@ -17,10 +17,11 @@ public class Main {
         printContentLengthDistribution(statistics);
         printValueStatistics(statistics);
 
+
         CsvExporter exporter = new CsvExporter();
         exporter.exportOtherContents(statistics.getOtherContents(), "output/other_contents.csv");
-
         exporter.exportContentFrequency(statistics.getContentFrequency(), "output/content_frequency.csv");
+        exporter.exportMonthlyStatistics(statistics.getMonthlyActivity(), statistics.getUniqueActivity(), "output/monthly_statistics.csv");
 
         System.out.println("\nWriting to CSV done.");
     }

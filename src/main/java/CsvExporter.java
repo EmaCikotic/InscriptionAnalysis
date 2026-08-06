@@ -1,10 +1,8 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.YearMonth;
+import java.util.*;
 
 class CsvExporter {
 
@@ -30,15 +28,11 @@ class CsvExporter {
         }
     }
 
-    public void exportContentFrequency(Map<String, Integer> contentFrequency,
-                                       String filePath)
-            throws IOException {
+    public void exportContentFrequency(Map<String, Integer> contentFrequency, String filePath) throws IOException {
 
-        List<Map.Entry<String, Integer>> sortedContents =
-                new ArrayList<>(contentFrequency.entrySet());
+        List<Map.Entry<String, Integer>> sortedContents =  new ArrayList<>(contentFrequency.entrySet());
 
-        sortedContents.sort((first, second) ->
-                Integer.compare(second.getValue(), first.getValue()));
+        sortedContents.sort((first, second) ->  Integer.compare(second.getValue(), first.getValue()));
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
 
@@ -58,6 +52,31 @@ class CsvExporter {
 
                 writer.println(entry.getValue() + ",\"" + content + "\"");
             }
+        }
+    }
+    public void exportMonthlyStatistics(Map<YearMonth, Integer> monthlyActivity,Map<YearMonth, Set<String>> uniqueActivity , String filePath)
+            throws IOException {
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+
+            writer.println("Month,Total,Unique,Duplicates,DuplicatePercentage");
+
+            for (YearMonth month : monthlyActivity.keySet()) {
+                int total = monthlyActivity.get(month);
+                int unique = uniqueActivity.get(month).size();
+                int duplicates = total - unique;
+                double duplicatePercentage = (duplicates * 100.0) / total;
+
+                writer.println(
+                        month + "," +
+                                total + "," +
+                                unique + "," +
+                                duplicates + "," +
+                                String.format(Locale.US, "%.2f", duplicatePercentage)
+                );
+
+            }
+
         }
     }
 }
