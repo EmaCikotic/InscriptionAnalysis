@@ -22,6 +22,7 @@ public class Main {
         exporter.exportOtherContents(statistics.getOtherContents(), "output/other_contents.csv");
         exporter.exportContentFrequency(statistics.getContentFrequency(), "output/content_frequency.csv");
         exporter.exportMonthlyStatistics(statistics.getMonthlyActivity(), statistics.getUniqueActivity(), "output/monthly_statistics.csv");
+        exporter.exportContentTypes(statistics.getContentTypes(), statistics.getTotalCount(), "output/content_types.csv");
 
         System.out.println("\nWriting to CSV done.");
     }
