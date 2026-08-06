@@ -75,11 +75,20 @@ public class Main {
 
         Map<String, Integer> contentTypes = statistics.getContentTypes();
 
+        int total =statistics.getTotalCount();
+
         for (String type : contentTypes.keySet()) {
 
             int count = contentTypes.get(type);
 
-            System.out.printf("%-18s %s%n", type, String.format("%,d", count));
+            double percentage = (count *100.00) /total;
+
+            System.out.printf(
+                    "%-18s %-12s (%6.2f%%)%n",
+                    type,
+                    String.format("%,d", count),
+                    percentage
+            );
         }
     }
 
@@ -119,8 +128,9 @@ public class Main {
 
         System.out.println("\nValue Statistics:");
 
-        System.out.println("Minimum value: " + statistics.getMinimumValue() + " sats");
-        System.out.println("Maximum value: " + statistics.getMaximumValue() + " sats");
-        System.out.printf("Average value: %.2f sats%n", statistics.getAverageValue());
+        //sats removed for now
+        System.out.println("Minimum value: " + statistics.getMinimumValue());
+        System.out.println("Maximum value: " + statistics.getMaximumValue());
+        System.out.printf("Average value: %.2f %n", statistics.getAverageValue());
     }
 }

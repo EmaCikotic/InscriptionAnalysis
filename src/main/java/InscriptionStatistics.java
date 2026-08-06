@@ -136,18 +136,13 @@ public class InscriptionStatistics {
             otherContents.add(content);
         }
 
-
         if (timestamp < earliestTimestamp) {
             earliestTimestamp = timestamp;
         }
 
-
         if (timestamp > latestTimestamp) {
             latestTimestamp = timestamp;
         }
-
-
-
 
         totalCount++;
     }
