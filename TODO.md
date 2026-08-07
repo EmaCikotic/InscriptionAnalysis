@@ -41,7 +41,7 @@
 - [ ] Analyze the most frequently occurring domains
 - [ ] Explore methods for measuring content similarity
 - [ ] Group similar inscriptions into content clusters
-- 
+  
 ## Exported Results
 - [x] Export content type statistics to CSV
 - [x] Export monthly statistics to CSV
