@@ -18,7 +18,10 @@
 - [x] Find the most frequently repeated content
 - [x] Export content-frequency results to CSV
 - [x] Add duplicate percentages to monthly statistics
+- [x] Analyze content length statistics
 - [x] Analyze content length distribution
+- [x] Analyze value statistics
+- [x] Analyze average content length per content type
 - [ ] Investigate the meaning and distribution of the `value` field
 
 ## Content Analysis
@@ -38,6 +41,13 @@
 - [ ] Analyze the most frequently occurring domains
 - [ ] Explore methods for measuring content similarity
 - [ ] Group similar inscriptions into content clusters
+- 
+## Exported Results
+- [x] Export content type statistics to CSV
+- [x] Export monthly statistics to CSV
+- [x] Export content types to CSV
+- [x] Export average content length per type to CSV
+- [x] Export unclassified contents to CSV
 
 ## Data Collection — Bachelor Thesis Extension
 > Required if this project is developed into a bachelor thesis.
