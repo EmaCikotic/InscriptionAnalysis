@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -81,32 +80,6 @@ class CsvExporter {
         }
     }
 
-    public void exportContentTypes(Map<YearMonth, Integer> monthlyActivity,Map<YearMonth, Set<String>> uniqueActivity , String filePath)
-            throws IOException {
-
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-
-            writer.println("Month,Total,Unique,Duplicates,DuplicatePercentage");
-
-            for (YearMonth month : monthlyActivity.keySet()) {
-                int total = monthlyActivity.get(month);
-                int unique = uniqueActivity.get(month).size();
-                int duplicates = total - unique;
-                double duplicatePercentage = (duplicates * 100.0) / total;
-
-                writer.println(
-                        month + "," +
-                                total + "," +
-                                unique + "," +
-                                duplicates + "," +
-                                String.format(Locale.US, "%.2f", duplicatePercentage)
-                );
-
-            }
-
-        }
-    }
-
     public void exportContentTypes (Map<String, Integer> contentTypes, int totalInscriptions ,String filePath)
             throws IOException {
         try(PrintWriter writer = new PrintWriter(new FileWriter(filePath))){
@@ -121,6 +94,27 @@ class CsvExporter {
                         type + "," +
                         count + "," +
                                 String.format(Locale.US, "%.2f", percentage)
+                );
+            }
+
+
+        }
+
+    }
+    public void exportAverageContentLengthPerType(Map<String, Integer> contentTypes, Map<String, Long> contentTypeLengths, String filePath)
+            throws IOException {
+        try(PrintWriter writer = new PrintWriter(new FileWriter(filePath))){
+
+            writer.println("Type,Average Length");
+
+            for(String type : contentTypes.keySet()) {
+               int  count =contentTypes.get(type);
+               long totalLength= contentTypeLengths.get(type);
+               double  averageLength= (double) totalLength/count;
+
+                writer.println(
+                        type + "," +
+                                String.format(Locale.US, "%.2f", averageLength)
                 );
             }
 

@@ -31,6 +31,7 @@ public class InscriptionStatistics {
     private final Set<String> otherContents = new HashSet<>();
     private final Map<String, Integer> contentLengthDistribution = new TreeMap<>();
 
+    private final Map<String, Long> contentTypeLengths = new HashMap<>();
     public void process(Inscription inscription, String type) {
 
         long timestamp = inscription.getTimestamp();
@@ -116,6 +117,14 @@ public class InscriptionStatistics {
             }
         }
 
+        // Count total content length for each content type
+        if (contentTypeLengths.containsKey(type)) {
+            long currentTotalLength = contentTypeLengths.get(type);
+            contentTypeLengths.put(type, currentTotalLength + contentLength);
+        } else {
+            contentTypeLengths.put(type, contentLength);
+        }
+
         // Count how many inscriptions belong to each content type
         if (contentTypes.containsKey(type)) {
             int currentTypeCount = contentTypes.get(type);
@@ -198,6 +207,9 @@ public class InscriptionStatistics {
 
     public Map<String, Integer> getContentLengthDistribution() {
         return contentLengthDistribution;
+    }
+    public Map<String, Long> getContentTypeLengths() {
+        return contentTypeLengths;
     }
 
     public long getMaximumValue() {

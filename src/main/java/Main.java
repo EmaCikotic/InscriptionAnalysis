@@ -15,6 +15,7 @@ public class Main {
         printContentTypes(statistics);
         printContentLengthStatistics(statistics);
         printContentLengthDistribution(statistics);
+        printAverageContentLengthPerType(statistics);
         printValueStatistics(statistics);
 
 
@@ -23,6 +24,7 @@ public class Main {
         exporter.exportContentFrequency(statistics.getContentFrequency(), "output/content_frequency.csv");
         exporter.exportMonthlyStatistics(statistics.getMonthlyActivity(), statistics.getUniqueActivity(), "output/monthly_statistics.csv");
         exporter.exportContentTypes(statistics.getContentTypes(), statistics.getTotalCount(), "output/content_types.csv");
+        exporter.exportAverageContentLengthPerType(statistics.getContentTypes(), statistics.getContentTypeLengths(), "output/average_content_length_per_type.csv");
 
         System.out.println("\nWriting to CSV done.");
     }
@@ -124,6 +126,26 @@ public class Main {
 
             System.out.printf("%-20s %s%n", range, String.format("%,d", count)
             );
+        }
+    }
+
+    private static void printAverageContentLengthPerType(InscriptionStatistics statistics) {
+
+        System.out.println("\nAverage Content Length per Type:");
+
+        Map<String, Integer> contentTypes = statistics.getContentTypes();
+        Map<String, Long> contentTypeLengths = statistics.getContentTypeLengths();
+
+        System.out.printf("%-18s %-20s%n", "Type", "Average Length (bytes)");
+
+        for (String type : contentTypes.keySet()) {
+
+            int count = contentTypes.get(type);
+            long totalLength = contentTypeLengths.get(type);
+
+            double averageLength = (double) totalLength / count;
+
+            System.out.printf("%-18s %.2f%n", type, averageLength);
         }
     }
     private static void printValueStatistics(InscriptionStatistics statistics) {
