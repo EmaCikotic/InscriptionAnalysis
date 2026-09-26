@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.time.YearMonth;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -7,6 +8,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         InscriptionReader reader = new InscriptionReader();
+
 
         InscriptionStatistics statistics = reader.readFile("data/text_inscriptions.txt");
 
@@ -19,13 +21,114 @@ public class Main {
         printValueStatistics(statistics);
 
 
+        System.out.println("\n==============================");
+        System.out.println("SECURITY EXPLORATORY ANALYSIS");
+        System.out.println("==============================");
+
+        System.out.println("Scanning inscriptions");
+        SecurityStatistics securityStatistics =  reader.scanSecurity("data/text_inscriptions.txt");
+        System.out.println("Scanning done");
+
+
+        System.out.println(
+                "\nInscriptions with at least one security indicator: "
+                        + String.format(
+                        "%,d",
+                        securityStatistics.getInscriptionsWithAnyMatch()
+                )
+        );
+
+        System.out.println("\n==============================");
+        System.out.println("BEHAVIORAL SECURITY ANALYSIS");
+        System.out.println("==============================");
+
+        System.out.println("Scanning behaviors...");
+
+        BehavioralSecurityStatistics behavioralStatistics =
+                reader.scanBehaviors(
+                        "data/text_inscriptions.txt"
+                );
+
+        System.out.println("Behavioral scan done.");
+
+        System.out.println(
+                "\nInscriptions with at least one behavior: "
+                        + String.format(
+                        "%,d",
+                        behavioralStatistics
+                                .getInscriptionsWithAnyBehavior()
+                )
+        );
+
+        System.out.println("\nBehavior counts:");
+
+        for (Map.Entry<String, Integer> entry :
+                behavioralStatistics
+                        .getBehaviorCounts()
+                        .entrySet()) {
+
+            System.out.printf(
+                    "%-30s %,d%n",
+                    entry.getKey(),
+                    entry.getValue()
+            );
+        }
+
+        System.out.println(
+                "\nStrong behavioral candidates: "
+                        + String.format(
+                        "%,d",
+                        behavioralStatistics
+                                .getCandidates()
+                                .size()
+                )
+        );
+
+        System.out.println("\nCategory counts:");
+
+        for (Map.Entry<String, Integer> entry :
+                securityStatistics.getCategoryCounts().entrySet()) {
+
+            System.out.printf(
+                    "%-25s %,d%n",
+                    entry.getKey(),
+                    entry.getValue()
+            );
+        }
+
+        System.out.println("\nIndividual indicator counts:");
+
+        for (Map.Entry<String, Integer> entry :
+                securityStatistics.getIndicatorCounts().entrySet()) {
+
+            System.out.printf(
+                    "%-25s %,d%n",
+                    entry.getKey(),
+                    entry.getValue()
+            );
+        }
+
+        System.out.println("\nExample inscription IDs:");
+
+        for (Map.Entry<String, List<String>> entry :
+                securityStatistics.getExampleIds().entrySet()) {
+
+            System.out.println("\n" + entry.getKey());
+
+            for (String id : entry.getValue()) {
+                System.out.println("  " + id);
+            }
+        }
+
+
         CsvExporter exporter = new CsvExporter();
         exporter.exportOtherContents(statistics.getOtherContents(), "output/other_contents.csv");
         exporter.exportContentFrequency(statistics.getContentFrequency(), "output/content_frequency.csv");
         exporter.exportMonthlyStatistics(statistics.getMonthlyActivity(), statistics.getUniqueActivity(), "output/monthly_statistics.csv");
         exporter.exportContentTypes(statistics.getContentTypes(), statistics.getTotalCount(), "output/content_types.csv");
         exporter.exportAverageContentLengthPerType(statistics.getContentTypes(), statistics.getContentTypeLengths(), "output/average_content_length_per_type.csv");
-
+        exporter.exportSecurityCandidates(securityStatistics.getCandidates(), "output/security_candidates.csv");
+        exporter.exportBehavioralCandidates(behavioralStatistics.getCandidates(), "output/behavioral_candidates.csv");
         System.out.println("\nWriting to CSV done.");
     }
 

@@ -3,6 +3,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.YearMonth;
 import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 class CsvExporter {
 
@@ -121,5 +124,155 @@ class CsvExporter {
 
         }
 
+    }
+    public void exportSecurityCandidates(
+            List<SecurityCandidate> candidates,
+            String filePath
+    ) throws IOException {
+
+        try (PrintWriter writer =
+                     new PrintWriter(new FileWriter(filePath))) {
+
+            writer.println(
+                    "ID,Block,Timestamp,ContentLength,Categories,Indicators,Content"
+            );
+
+            for (SecurityCandidate candidate : candidates) {
+
+                Inscription inscription = candidate.getInscription();
+
+                String categories =
+                        String.join(
+                                "|",
+                                candidate.getMatches().keySet()
+                        );
+
+                List<String> allIndicators = new ArrayList<>();
+
+                for (List<String> indicators :
+                        candidate.getMatches().values()) {
+
+                    allIndicators.addAll(indicators);
+                }
+
+                String indicatorString =
+                        String.join("|", allIndicators);
+
+                String content =
+                        inscription.getContent();
+
+                if (content == null) {
+                    content = "";
+                }
+
+                // Proper CSV escaping
+                content = content.replace("\"", "\"\"");
+
+                categories = categories.replace("\"", "\"\"");
+                indicatorString =
+                        indicatorString.replace("\"", "\"\"");
+
+                writer.println(
+                        "\"" + inscription.getId() + "\"," +
+                                inscription.getBlockNo() + "," +
+                                inscription.getTimestamp() + "," +
+                                inscription.getContentLength() + "," +
+                                "\"" + categories + "\"," +
+                                "\"" + indicatorString + "\"," +
+                                "\"" + content + "\""
+                );
+            }
+        }
+    }
+    private String escapeCsv(String value) {
+
+        if (value == null) {
+            return "";
+        }
+
+        return value.replace("\"", "\"\"");
+    }
+    private String sha256(String content) {
+
+        try {
+
+            MessageDigest digest =
+                    MessageDigest.getInstance("SHA-256");
+
+            byte[] hashBytes =
+                    digest.digest(
+                            content.getBytes(StandardCharsets.UTF_8)
+                    );
+
+            StringBuilder hex = new StringBuilder();
+
+            for (byte b : hashBytes) {
+                hex.append(
+                        String.format("%02x", b)
+                );
+            }
+
+            return hex.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+
+            throw new RuntimeException(
+                    "SHA-256 algorithm not available",
+                    e
+            );
+        }
+    }
+    public void exportBehavioralCandidates(
+            List<SecurityCandidate> candidates,
+            String filePath
+    ) throws IOException {
+
+        try (PrintWriter writer =
+                     new PrintWriter(new FileWriter(filePath))) {
+
+            writer.println(
+                    "ID,Block,Timestamp,ContentLength,ContentHash,Behaviors,MatchedPatterns,Content"
+            );
+
+            for (SecurityCandidate candidate : candidates) {
+
+                Inscription inscription = candidate.getInscription();
+
+                String content = inscription.getContent();
+
+                if (content == null) {
+                    content = "";
+                }
+
+                String hash = sha256(content);
+
+                String behaviors = String.join(
+                        "|",
+                        candidate.getMatches().keySet()
+                );
+
+                List<String> allPatterns = new ArrayList<>();
+
+                for (List<String> patterns :
+                        candidate.getMatches().values()) {
+
+                    allPatterns.addAll(patterns);
+                }
+
+                String matchedPatterns =
+                        String.join("|", allPatterns);
+
+                writer.println(
+                        "\"" + escapeCsv(inscription.getId()) + "\"," +
+                                inscription.getBlockNo() + "," +
+                                inscription.getTimestamp() + "," +
+                                inscription.getContentLength() + "," +
+                                "\"" + hash + "\"," +
+                                "\"" + escapeCsv(behaviors) + "\"," +
+                                "\"" + escapeCsv(matchedPatterns) + "\"," +
+                                "\"" + escapeCsv(content) + "\""
+                );
+            }
+        }
     }
 }
