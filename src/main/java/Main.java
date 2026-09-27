@@ -120,6 +120,41 @@ public class Main {
             }
         }
 
+        System.out.println("\n==============================");
+        System.out.println("INSCRIPTION REFERENCE ANALYSIS");
+        System.out.println("==============================");
+
+        System.out.println("Scanning references...");
+
+        ReferenceStatistics referenceStatistics =
+                reader.scanReferences("data/text_inscriptions.txt");
+
+        System.out.println("Reference scan done.");
+
+        System.out.println(
+                "\nInscriptions with references: "
+                        + String.format(
+                        "%,d",
+                        referenceStatistics.getInscriptionsWithReferences()
+                )
+        );
+
+        System.out.println(
+                "Total references: "
+                        + String.format(
+                        "%,d",
+                        referenceStatistics.getTotalReferences()
+                )
+        );
+
+        System.out.println(
+                "Unique referenced inscriptions: "
+                        + String.format(
+                        "%,d",
+                        referenceStatistics.getUniqueReferencedCount()
+                )
+        );
+
 
         CsvExporter exporter = new CsvExporter();
         exporter.exportOtherContents(statistics.getOtherContents(), "output/other_contents.csv");

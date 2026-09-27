@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class InscriptionReader {
 
@@ -110,6 +111,46 @@ public class InscriptionReader {
             throw new RuntimeException(
                     "Error reading file: "
                             + e.getMessage(),
+                    e
+            );
+        }
+
+        return statistics;
+    }
+    public ReferenceStatistics scanReferences(String filePath) {
+
+        ReferenceStatistics statistics = new ReferenceStatistics();
+        ReferenceScanner scanner = new ReferenceScanner();
+
+        try (BufferedReader reader =
+                     new BufferedReader(new FileReader(filePath))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+
+                Inscription inscription =
+                        mapper.readValue(line, Inscription.class);
+
+                Set<String> references =
+                        scanner.findReferences(inscription.getContent());
+
+                if (!references.isEmpty()) {
+
+                    statistics.markInscriptionWithReference();
+
+                    for (String targetId : references) {
+                        statistics.addReference(
+                                inscription.getId(),
+                                targetId
+                        );
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Error reading file: " + e.getMessage(),
                     e
             );
         }
