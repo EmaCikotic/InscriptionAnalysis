@@ -21,7 +21,7 @@ public class Main {
         printValueStatistics(statistics);
 
 
-        System.out.println("\n==============================");
+       System.out.println("\n==============================");
         System.out.println("SECURITY EXPLORATORY ANALYSIS");
         System.out.println("==============================");
 
@@ -154,6 +154,65 @@ public class Main {
                         referenceStatistics.getUniqueReferencedCount()
                 )
         );
+
+        System.out.println("\nChecking referenced targets...");
+
+        Set<String> datasetIds =
+                reader.readAllIds("data/text_inscriptions.txt");
+
+        int present = 0;
+        int missing = 0;
+
+        for (String targetId :
+                referenceStatistics.getUniqueReferencedIds()) {
+
+            if (datasetIds.contains(targetId)) {
+                present++;
+            } else {
+                missing++;
+            }
+        }
+
+        System.out.println(
+                "Referenced targets present in dataset: "
+                        + String.format("%,d", present)
+        );
+
+        System.out.println(
+                "Referenced targets missing from dataset: "
+                        + String.format("%,d", missing)
+        );
+
+        System.out.println("\nTop 10 most referenced inscriptions:");
+
+        referenceStatistics.getTargetFrequency()
+                .entrySet()
+                .stream()
+                .sorted(
+                        Map.Entry.<String, Integer>comparingByValue()
+                                .reversed()
+                )
+                .limit(10)
+                .forEach(entry ->
+                        System.out.printf(
+                                "%,6d  %s%n",
+                                entry.getValue(),
+                                entry.getKey()
+                        )
+                );
+
+        DependencyGraphAnalyzer graphAnalyzer = new DependencyGraphAnalyzer(referenceStatistics.getReferences());
+
+        int maximumDepth = graphAnalyzer.getMaximumDepth();
+
+        System.out.println("Maximum observable dependency depth: " + maximumDepth);
+
+        System.out.println(
+                "\nDependency chains with depth >= 2:"
+        );
+
+        graphAnalyzer.printChainsWithMinimumDepth(2);
+
 
 
         CsvExporter exporter = new CsvExporter();

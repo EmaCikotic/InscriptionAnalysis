@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -156,5 +157,32 @@ public class InscriptionReader {
         }
 
         return statistics;
+    }
+
+    public Set<String> readAllIds(String filePath) {
+
+        Set<String> ids = new HashSet<>();
+
+        try (BufferedReader reader =
+                     new BufferedReader(new FileReader(filePath))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+
+                Inscription inscription =
+                        mapper.readValue(line, Inscription.class);
+
+                ids.add(inscription.getId());
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "Error reading file: " + e.getMessage(),
+                    e
+            );
+        }
+
+        return ids;
     }
 }
